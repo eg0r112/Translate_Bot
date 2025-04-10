@@ -6,10 +6,10 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using System.Diagnostics;
 using BotOKE;
-// using Bot;
+// using SeleniumTests;
 class Program
 {
-    private static readonly string token = "7551179520:AAH7QmPYn1rfsdObRm0mpqgdvDohh-qxJAc"; //токен моего бота
+    private static readonly string token = "8137282106:AAHdkipByKbtyVGjk-UhwFkb0ZFHD4bR9fw"; //токен моего бота
     private static readonly ITelegramBotClient botClient = new TelegramBotClient(token); //объявляю бота
 
     static async Task Main(string[] args)
@@ -17,8 +17,8 @@ class Program
         var me = await botClient.GetMeAsync(); 
         Console.WriteLine($"Название бота: {me.FirstName}  \nUsername бота: {me.Username}");
         BotMethods botMethods = new BotMethods();
-        // Programm pr = new Programm();
-        // pr.Maiii();
+        // ImmediateXPathTextRetrievalTests pr = new ImmediateXPathTextRetrievalTests();
+        // pr.Setup();
         botMethods.Chek();
         Console.ReadLine();
     }

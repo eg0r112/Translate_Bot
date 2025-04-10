@@ -10,19 +10,150 @@ using Serilog;
 using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json;
+using NUnit.Framework;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 namespace BotOKE
 {
     public class BotMethods
     {
+        private IWebDriver driver;
         private static readonly HttpClient client = new HttpClient();
-        private static readonly string token = "7551179520:AAH7QmPYn1rfsdObRm0mpqgdvDohh-qxJAc"; //токен моего бота
+        private static readonly string token = "8137282106:AAHdkipByKbtyVGjk-UhwFkb0ZFHD4bR9fw"; //токен моего бота
         private static readonly ITelegramBotClient botClient = new TelegramBotClient(token); //объявляю бота
+
+        [OneTimeSetUp]
+        public void Setup()
+        {
+            ChromeOptions options = new ChromeOptions();
+            options.AddArgument("--headless"); // Включение безголового режима
+            options.AddArgument("--no-sandbox"); // Опционально, для устранения проблем с безопасностью
+            options.AddArgument("--disable-dev-shm-usage"); // Опционально, для устранения проблем с памятью
+
+            driver = new ChromeDriver(options);
+            GetTextFromElementByXPathWithoutWait();
+        }
+
+        public static string elementText, elementText1, ln;
+
+        [Test]
+        public void GetTextFromElementByXPathWithoutWait()
+        {
+            // Открываем нужный URL
+            driver.Navigate().GoToUrl($"https://translate.google.com/?hl=ru&sl=ru&tl=en&text={soo}&op=translate"); // Замените на нужный URL
+
+            // XPath для элемента, текст которого нужно получить
+            string xpath = "//*[@id=\"yDmH0d\"]/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz/div[1]/div[6]/div/div[1]/span[1]/span/span"; // Замените на нужный XPath
+
+            try
+            {
+                // Прямое получение элемента без ожидания
+                var element = driver.FindElement(By.XPath(xpath));
+
+                // Получение текста из элемента
+                elementText = element.Text;
+                Console.WriteLine(elementText);
+            }
+            catch (NoSuchElementException)
+            {
+                Console.WriteLine("Элемент не найден.");
+                TearDown();
+                Setup();
+            }
+            TearDown();
+        }
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            driver.Quit();
+        }
+
+
+
+
+
+        [OneTimeSetUp]
+        public void Setup1()
+        {
+            ChromeOptions options1 = new ChromeOptions();
+            options1.AddArgument("--headless"); // Включение безголового режима
+            options1.AddArgument("--no-sandbox"); // Опционально, для устранения проблем с безопасностью
+            options1.AddArgument("--disable-dev-shm-usage"); // Опционально, для устранения проблем с памятью
+
+            driver = new ChromeDriver(options1);
+            GetTextFromElementByXPathWithoutWait1();
+        }
+
+
+        [Test]
+        public void GetTextFromElementByXPathWithoutWait1()
+        {
+            // Открываем нужный URL
+            driver.Navigate().GoToUrl($"https://translate.google.com/?hl=ru&sl=ru&tl=fr&text={soo}&op=translate"); // Замените на нужный URL
+
+            // XPath для элемента, текст которого нужно получить
+            string xpath1 = "//*[@id=\"yDmH0d\"]/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz/div[1]/div[6]/div/div[1]/span[1]/span/span"; // Замените на нужный XPath
+
+            try
+            {
+                // Прямое получение элемента без ожидания
+                var element1 = driver.FindElement(By.XPath(xpath1));
+
+                // Получение текста из элемента
+                elementText1 = element1.Text;
+                Console.WriteLine(elementText1);
+            }
+            catch (NoSuchElementException)
+            {
+                Console.WriteLine("Элемент не найден.");
+                TearDown1();
+                Setup1();
+            }
+            TearDown1();
+        }
+
+        [OneTimeTearDown]
+        public void TearDown1()
+        {
+            driver.Quit();
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //сделать в отдельный класс ту фигню вверху чтобы вызывать класс передавая в него данные а не 2 раза скрипт
+    //подчистить скрипт
+    //добавить коменты
+
+
+
+
+
+
+
+
+
+
         public void Chek()
         {
             // botClient.OnCallbackQuery += Bot_OnCallbackQuery;
             botClient.StartReceiving(HandleUpdateAsync, HandlePollingErrorAsync); //добавляет обработчик событий *изменения* *ошибки*
         }
-        public static string user;
+        public static string user, soo;
         public static long IdUs;
         public static int schet2, schet1, schet3, ch3,ch1,ch2;
         private static async Task HandleUpdateAsync(ITelegramBotClient Botclient, Update update, CancellationToken token)
@@ -82,7 +213,7 @@ namespace BotOKE
         if(key == massange.Text)
         {
             object[] values = Franch[key];
-            await botClient.SendTextMessageAsync(IdUs, $"Английский:{values[0]} \nФранцузский:{values[1]}");
+            await botClient.SendTextMessageAsync(IdUs, $"Английский: {values[0]} \nФранцузский: {values[1]}");
             ch2=1;
         }
     }
@@ -107,7 +238,7 @@ namespace BotOKE
     {
         if(key == massange.Text)
         {
-            await botClient.SendTextMessageAsync(IdUs, $"Английский:{Angl[key]}");
+            await botClient.SendTextMessageAsync(IdUs, $"Английский: {Angl[key]}");
             ch1=1;
         }
     }
@@ -128,7 +259,23 @@ namespace BotOKE
     }
     if(schet3 == 1)
     {
+        BotMethods bootM = new BotMethods();
+        string[] words = massange.Text.Split(new char[] { ' ', ',', '.', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
         
+        // Проверка количества слов
+        if (words.Length == 1)
+        {
+            soo = massange.Text.Replace(" ", "");
+        }
+        else if (words.Length > 1)
+        {
+            soo = massange.Text.Replace(" ", "%20");
+        }
+        bootM.Setup();
+        bootM.Setup1();
+        await botClient.SendTextMessageAsync(IdUs, $"Английский: {elementText} \nФранцузский: {elementText1}");
+        elementText = null;
+        elementText1 = null;
     }
     if(massange.Text == "Перевод с Нейросетью")
     {
